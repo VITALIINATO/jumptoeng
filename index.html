@@ -125,22 +125,38 @@
             
             let currentPhrase = {};
 
+            let availablePhrases = [...phrases]; // Создаем копию массива фраз
+
             function showRandomPhrase() {
                 const phraseContainer = document.getElementById('phrase-container');
                 phraseContainer.classList.remove('visible');
 
                 setTimeout(() => {
-                    const randomIndex = Math.floor(Math.random() * phrases.length);
-                    currentPhrase = phrases[randomIndex];
+                    // Если массив доступных фраз пуст, восстанавливаем его
+                    if (availablePhrases.length === 0) {
+                        availablePhrases = [...phrases];
+                    }
+
+                    // Выбираем случайный индекс из доступных фраз
+                    const randomIndex = Math.floor(Math.random() * availablePhrases.length);
+                    currentPhrase = availablePhrases[randomIndex];
+
+                    // Удаляем показанную фразу из массива доступных фраз
+                    availablePhrases.splice(randomIndex, 1);
+
+                    // Обновляем содержимое страницы
                     document.getElementById('phrase').textContent = currentPhrase.english;
                     document.getElementById('transcription').textContent = currentPhrase.transcription;
-                    document.getElementById('translation').textContent = `${currentPhrase.russian}`;
+                    document.getElementById('translation').textContent = currentPhrase.russian;
                     document.getElementById('phrase-image').src = currentPhrase.imageSrc || "";
                     document.getElementById('phrase-image').style.display = currentPhrase.imageSrc ? "block" : "none";
 
                     phraseContainer.classList.add('visible');
                 }, 500);
             }
+
+
+
 
             function speakPhrase() {
                 if ('speechSynthesis' in window) {
