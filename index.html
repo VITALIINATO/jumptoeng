@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Английские фразы с анимацией</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        #phrase-container {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #phrase-container.visible {
+            opacity: 1;
+        }
+
+        #phrase-image {
+            width: 250px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        #phrase {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Стиль для кнопок */
+        button {
+            width: 150px; /* Фиксированная ширина для одинакового размера кнопок */
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        #speak-phrase-btn {
+            background-color: #4CAF50; /* Зеленая кнопка */
+        }
+
+        #speak-phrase-btn:hover {
+            background-color: #45a049;
+        }
+
+        #next-phrase-btn {
+            background-color: #007BFF; /* Синяя кнопка */
+        }
+
+        #next-phrase-btn:hover {
+            background-color: #0069d9;
+        }
+
+        #translation-container {
+            margin-top: 20px;
+            height: 60px;
+        }
+
+        /* Поменяли порядок отображения транскрипции и перевода */
+        #transcription {
+            font-size: 16px;
+            color: #808080;
+            margin-top: 5px;
+        }
+
+        #translation {
+            font-size: 18px;
+            color: #003366;
+        }
+
+        .slider-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="phrase-container">
+            <img id="phrase-image" src="" alt="Phrase illustration" />
+            <p id="phrase">Приветствие!</p>
+            <div id="translation-container">
+                <p id="transcription"></p>
+                <p id="translation"></p>
+            </div>
+        </div>
+        
+        <button id="speak-phrase-btn">Озвучить фразу</button>
+        <button id="next-phrase-btn">Next</button>
+
+        <div class="slider-container">
+            <label for="speedRange">Скорость речи:</label>
+            <input type="range" id="speedRange" min="0.5" max="1" value="1" step="0.1">
+            <span id="speedDisplay">1.0x</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phrases = [
+                { english: "Hello!", russian: "Привет!", transcription: "həˈloʊ", imageSrc: "1.webp" },
+                { english: "Good morning!", russian: "Доброе утро!", transcription: "ɡʊd ˈmɔːrnɪŋ", imageSrc: "2.webp" },
+                { english: "How are you?", russian: "Как дела?", transcription: "haʊ ɑːr juː", imageSrc: "3.png" },
+                { english: "Thank you!", russian: "Спасибо!", transcription: "θæŋk juː", imageSrc: "4.png" }             
+            ];
+            
+            let currentPhrase = {};
+
+            function showRandomPhrase() {
+                const phraseContainer = document.getElementById('phrase-container');
+                phraseContainer.classList.remove('visible');
+
+                setTimeout(() => {
+                    const randomIndex = Math.floor(Math.random() * phrases.length);
+                    currentPhrase = phrases[randomIndex];
+                    document.getElementById('phrase').textContent = currentPhrase.english;
+                    document.getElementById('transcription').textContent = currentPhrase.transcription;
+                    document.getElementById('translation').textContent = `${currentPhrase.russian}`;
+                    document.getElementById('phrase-image').src = currentPhrase.imageSrc || "";
+                    document.getElementById('phrase-image').style.display = currentPhrase.imageSrc ? "block" : "none";
+
+                    phraseContainer.classList.add('visible');
+                }, 500);
+            }
+
+            function speakPhrase() {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const speech = new SpeechSynthesisUtterance();
+                    speech.text = currentPhrase.english;
+                    speech.lang = 'en-US';
+
+                    const speed = document.getElementById('speedRange').value;
+                    speech.rate = parseFloat(speed);
+
+                    let speakInterval = setInterval(() => {
+                        if (!window.speechSynthesis.speaking) {
+                            window.speechSynthesis.speak(speech);
+                        }
+                    }, 3000);
+
+                    speech.onend = () => {
+                        clearInterval(speakInterval);
+                    };
+
+                    setTimeout(() => {
+                        window.speechSynthesis.speak(speech);
+                    }, 100);
+                } else {
+                    alert("Синтез речи не поддерживается вашим браузером.");
+                }
+            }
+
+            const speedRange = document.getElementById('speedRange');
+            const speedDisplay = document.getElementById('speedDisplay');
+            speedRange.addEventListener('input', function() {
+                speedDisplay.textContent = `${speedRange.value}x`;
+            });
+
+            document.getElementById('speak-phrase-btn').addEventListener('click', speakPhrase);
+            document.getElementById('next-phrase-btn').addEventListener('click', showRandomPhrase);
+
+            showRandomPhrase();
+        });
+    </script>
+</body>
+</html>
