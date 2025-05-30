@@ -206,7 +206,7 @@
     <p id="translation"></p>
 
     <!-- Поле ввода для теста -->
-    <input type="text" id="user-answer" class="hidden" placeholder="Введи п" />
+    <input type="text" id="user-answer" class="hidden" placeholder="Введи перевод" />
   
     <!-- Режимы -->
 <div class="mode-buttons">
@@ -274,7 +274,7 @@
     { english: "sad face", transcription: "[sæd feɪs]", translation: "грустное лицо", imageSrc: "sad face.jpg" }
   ];
 
-
+let answeredPhrases = []; // Фразы, на которые был дан ответ в режиме Тренировка
   let currentPhraseIndex = 0;
     let correctCount = 0;
     let currentMode = 'learn';
@@ -307,28 +307,38 @@ function unlockAudio() {
 document.addEventListener('click', unlockAudio, { once: true });
 
 
-    function updateScoreDisplay() {
-      document.getElementById('score-info').textContent = 
-        `Правильных: ${correctCount} из ${totalPhrases}`;
-    }
+   function updateScoreDisplay() {
+  const totalTested = answeredPhrases.length;
+  document.getElementById('score-info').textContent = 
+    `Правильных: ${correctCount} из ${totalTested}`;
+}
 
-    function switchMode(mode) {
-      currentMode = mode;
-      const imageElement = document.getElementById('phrase-image');
-      
-      // Отключение/включение озвучки
-      if (mode === 'test') {
-        imageElement.removeEventListener('click', speakPhrase);
-      } else {
-        imageElement.addEventListener('click', speakPhrase);
-      }
+   function switchMode(mode) {
+  currentMode = mode;
+  const imageElement = document.getElementById('phrase-image');
+  const userAnswerInput = document.getElementById('user-answer');
 
-      document.getElementById('user-answer').classList.toggle('hidden', mode !== 'test');
-      document.getElementById('phrase').classList.toggle('hidden', mode === 'test');
-      document.getElementById('transcription').classList.toggle('hidden', mode === 'test');
-      document.getElementById('next-phrase-btn').textContent = mode === 'test' ? '✅ Проверить' : ' Вперед ➡️';
-      document.getElementById('next-phrase-btn').onclick = mode === 'test' ? checkAnswer : nextAction;
-    }
+  // Отключение/включение озвучки
+  if (mode === 'test') {
+    imageElement.removeEventListener('click', speakPhrase);
+    userAnswerInput.classList.remove('hidden');
+    // Устанавливаем фокус на поле ввода
+    userAnswerInput.focus();
+  } else {
+    imageElement.addEventListener('click', speakPhrase);
+    userAnswerInput.classList.add('hidden');
+  }
+
+  document.getElementById('phrase').classList.toggle('hidden', mode === 'test');
+  document.getElementById('transcription').classList.toggle('hidden', mode === 'test');
+
+  document.getElementById('next-phrase-btn').textContent = mode === 'test' ? '✅ Проверить' : 'Вперед ➡️';
+  document.getElementById('next-phrase-btn').onclick = mode === 'test' ? checkAnswer : nextAction;
+
+  // Выделение активной кнопки режима
+  document.querySelectorAll('.mode-buttons button').forEach(btn => btn.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
 
     function nextAction() {
       if (currentMode === 'test') {
@@ -373,30 +383,37 @@ document.addEventListener('click', unlockAudio, { once: true });
       }
     }
 
-    function checkAnswer() {
-      const input = document.getElementById('user-answer');
-      const userAnswer = input.value.trim().toLowerCase();
-      const correctAnswer = phrases[currentPhraseIndex].english.toLowerCase();
+  function checkAnswer() {
+  const input = document.getElementById('user-answer');
+  const userAnswer = input.value.trim().toLowerCase();
+  const correctAnswer = phrases[currentPhraseIndex].english.toLowerCase();
 
-      if (userAnswer === '') {
-        alert('Введите ответ!');
-        return;
-      }
+  if (userAnswer === '') {
+    alert('Введите ответ!');
+    return;
+  }
 
-      if (userAnswer === correctAnswer) {
-        correctCount++;
-        playSound(correctSound);
-        setTimeout(() => {
-          input.value = '';
-          showNextPhrase();
-        }, 1000);
-      } else {
-        playSound(wrongSound);
-        alert(`❌ Неверно. Правильный ответ: ${correctAnswer}`);
-        input.value = '';
-      }
-      updateScoreDisplay();
-    }
+  const currentPhrase = phrases[currentPhraseIndex];
+
+  // Добавляем фразу в список пройденных
+  if (!answeredPhrases.includes(currentPhrase)) {
+    answeredPhrases.push(currentPhrase);
+  }
+
+  if (userAnswer === correctAnswer) {
+    correctCount++;
+    playSound(correctSound);
+    setTimeout(() => {
+      input.value = '';
+      showNextPhrase();
+    }, 1000);
+  } else {
+    playSound(wrongSound);
+    alert(`❌ Неверно. Правильный ответ: ${correctAnswer}`);
+    input.value = '';
+  }
+  updateScoreDisplay();
+}
 
    function playSound(audio) {
   if (!audio) return;
@@ -408,23 +425,27 @@ document.addEventListener('click', unlockAudio, { once: true });
     });
   }
 }
-    function showFinalScreen() {
-      document.getElementById('main-container').classList.add('hidden');
-      const finalScreen = document.getElementById('final-screen');
-      finalScreen.classList.remove('hidden');
-      document.getElementById('final-score-text').textContent = 
-        `Правильных: ${correctCount} из ${totalPhrases}`;
-    }
 
-    function restartTest() {
-      correctCount = 0;
-      currentPhraseIndex = 0;
-      updateScoreDisplay();
-      displayPhrase(phrases[0]);
-      document.getElementById('final-screen').classList.add('hidden');
-      document.getElementById('main-container').classList.remove('hidden');
-      switchMode('test');
-    }
+function showFinalScreen() {
+  document.getElementById('main-container').classList.add('hidden');
+  const finalScreen = document.getElementById('final-screen');
+  finalScreen.classList.remove('hidden');
+
+  const totalTested = answeredPhrases.length;
+  const finalText = `Правильно: ${correctCount} из ${totalTested}`;
+  document.getElementById('final-score-text').textContent = finalText;
+}
+
+   function restartTest() {
+  correctCount = 0;
+  currentPhraseIndex = 0;
+  answeredPhrases = []; // Сбрасываем список пройденных фраз
+  updateScoreDisplay();
+  displayPhrase(phrases[0]);
+  document.getElementById('final-screen').classList.add('hidden');
+  document.getElementById('main-container').classList.remove('hidden');
+  switchMode('test');
+}
 
     // Инициализация
 document.getElementById('phrase-image').addEventListener('click', speakPhrase);
