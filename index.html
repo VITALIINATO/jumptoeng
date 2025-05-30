@@ -1,672 +1,495 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JUMP to ENG</title>
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
-      --card-bg: #1e1e1e;
-      --primary-color: #00d4ff;
-      --secondary-color: #00ffcc;
-      --accent-color: #003366;
-      --text-light: #f0f0f0;
-      --text-muted: #cccccc;
-      --border-radius: 1rem;
-      --transition: all 0.3s ease;
-    }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-light);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container, .final-screen {
-      background: var(--card-bg);
-      padding: 2rem;
-      border-radius: var(--border-radius);
-      box-shadow: 0 10px 30px rgba(0, 100, 255, 0.2);
-      max-width: 1000px;
-      width: 100%;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-      animation: fadeInUp 0.8s ease-out;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 100, 255, 0.2);
-    }
-    .hidden {
-      display: none;
-    }
-    h1 {
-      color: var(--primary-color);
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
-    #phrase-image {
-      width: 250px;
-      height: 250px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 2px solid var(--primary-color);
-      box-shadow: 0 0 15px rgba(0, 100, 255, 0.5);
-      margin: 0 auto 1rem auto;
-      transition: transform 0.3s ease;
-      cursor: pointer;
-    }
-    #phrase-image:hover {
-      transform: scale(1.05);
-    }
-    #phrase, #transcription, #translation {
-      margin-bottom: 0.3rem;
-    }
-    #phrase {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--text-light);
-    }
-    #transcription {
-      font-size: 1rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-    #translation {
-      font-size: 1.1rem;
-      color: #e0e0e0;
-      font-weight: 500;
-    }
-    .buttons, .mode-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-    button {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 100, 255, 0.2);
-      background: linear-gradient(135deg, var(--accent-color), #001a33);
-      color: var(--primary-color);
-      transition: var(--transition);
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 100, 255, 0.4);
-    }
-    #next-phrase-btn {
-      background: linear-gradient(135deg, #003333, #001a1a);
-      color: var(--secondary-color);
-    }
-    #user-answer {
-      width: 95%;
-      padding: 0.6rem;
-      margin: 1rem auto;
-      font-size: 1rem;
-      border-radius: 0.5rem;
-      border: none;
-      outline: none;
-      background: #2c2c2c;
-      color: #fff;
-      box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
-      transition: border-color 0.3s ease;
-    }
-    #user-answer:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
-    }
-    .score {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: var(--primary-color);
-    }
-    .final-screen h2 {
-      color: var(--secondary-color);
-      margin-bottom: 1.5rem;
-    }
-    .final-score {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    @keyframes fadeInUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .mode-buttons button {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border: 2px dashed var(--primary-color);
-      background: transparent;
-      color: var(--primary-color);
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: var(--transition);
-    }
-    .mode-buttons button::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: var(--primary-color);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    .mode-buttons button.active::after {
-      opacity: 0.1;
-    }
-    .word-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 1rem 0;
-      justify-content: center;
-      max-width: 100%;
-      overflow-x: auto;
-      padding: 0.5rem;
-    }
-    .word {
-      padding: 0.5rem 1rem;
-      background: #333;
-      border-radius: 10px;
-      cursor: grab;
-      transition: transform 0.2s;
-      user-select: none;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0, 212, 255, 0.3);
-    }
-    .word.adjective {
-      color: #00d4ff;
-      border: 2px solid #00d4ff;
-    }
-    .word.noun {
-      color: #00ffcc;
-      border: 2px solid #00ffcc;
-    }
-    .word.dragging {
-      transform: scale(1.1);
-    }
-    .drop-zone {
-      min-height: 80px;
-      border: 2px dashed var(--primary-color);
-      border-radius: var(--border-radius);
-      padding: 1rem;
-      margin: 1rem 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-      justify-content: center;
-      background: #1a1a1a;
-    }
-    .phrase-builder {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .animated-phrase {
-      position: absolute;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--secondary-color);
-      opacity: 0;
-      transform: scale(0.5);
-      z-index: 10;
-      pointer-events: none;
-      animation: combine 1s ease-in-out;
-    }
-    @keyframes combine {
-      0% {
-        opacity: 0;
-        transform: scale(0.5) translateY(0);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.2) translateY(-30px);
-      }
-      100% {
-        transform: scale(1) translateY(0);
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JUMP to ENG</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            --card-bg: #1e1e1e;
+            --primary-color: #00d4ff;
+            --secondary-color: #00ffcc;
+            --accent-color: #003366;
+            --text-light: #f0f0f0;
+            --text-muted: #cccccc;
+            --border-radius: 1rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container,
+        .final-screen {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 100, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 100, 255, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        #phrase-image {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 100, 255, 0.5);
+            margin: 0 auto 1rem auto;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        #phrase-image:hover {
+            transform: scale(1.05);
+        }
+
+        #phrase,
+        #transcription,
+        #translation {
+            margin-bottom: 0.3rem;
+        }
+
+        #phrase {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        #transcription {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        #translation {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .buttons,
+        .mode-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 100, 255, 0.2);
+            background: linear-gradient(135deg, var(--accent-color), #001a33);
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 100, 255, 0.4);
+        }
+
+        #next-phrase-btn {
+            background: linear-gradient(135deg, #003333, #001a1a);
+            color: var(--secondary-color);
+        }
+
+        #user-answer {
+            width: 95%;
+            padding: 0.6rem;
+            margin: 1rem auto;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            outline: none;
+            background: #2c2c2c;
+            color: #fff;
+            box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        #user-answer:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+        }
+
+        .score {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+        }
+
+        .final-screen h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .final-score {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Стили для кнопок режима */
+        .mode-buttons button {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px dashed var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .mode-buttons button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mode-buttons button.active::after {
+            opacity: 0.1;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container" id="main-container">
-    <!-- Фраза -->
-    <img id="phrase-image" src="" alt="Фраза">
-    <p id="phrase">💋</p>
-    <p id="transcription"></p>
-    <p id="translation"></p>
-    <!-- Поле ввода для теста -->
-    <input type="text" id="user-answer" class="hidden" placeholder="Перевод" />
-    <!-- Режимы -->
-    <div class="mode-buttons">
-      <button onclick="switchMode('learn')">🎓 Обучение</button>
-      <button onclick="switchMode('test')">📝 Тренировка</button>
-      <button onclick="switchMode('builder')">🧩 Сборка</button>
+    <div class="container" id="main-container">
+
+
+
+        <!-- Фраза -->
+        <img id="phrase-image" src="" alt="Фраза">
+        <p id="phrase">💋</p>
+        <p id="transcription"></p>
+        <p id="translation"></p>
+
+        <!-- Поле ввода для теста -->
+        <input type="text" id="user-answer" class="hidden" placeholder="Введи перевод" />
+
+        <!-- Режимы -->
+        <div class="mode-buttons">
+            <button onclick="switchMode('learn')">🎓 Обучение</button>
+            <button onclick="switchMode('test')">📝 Тренировка</button>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="buttons">
+            <button id="prev-phrase-btn" onclick="showPreviousPhrase()">⬅️ Назад</button>
+            <button id="next-phrase-btn" onclick="nextAction()">Вперед ➡️</button>
+        </div>
+
+        <!-- Счет -->
+        <div class="score">
+            <p id="score-info">Правильных: 0 из 0</p>
+        </div>
     </div>
-    <!-- Кнопки -->
-    <div class="buttons">
-      <button id="prev-phrase-btn" onclick="showPreviousPhrase()">⬅️ Назад</button>
-      <button id="next-phrase-btn" onclick="nextAction()">Вперед ➡️</button>
+
+    <!-- Итоговый экран -->
+    <div class="final-screen hidden" id="final-screen">
+        <h2>Пройдено</h2>
+        <p class="final-score" id="final-score-text">Правильных: 0 из 3</p>
+        <button onclick="restartTest()">🔄 Начать заново</button>
     </div>
-    <!-- Счет -->
-    <div class="score">
-      <p id="score-info">Правильных: 0 из 0</p>
-    </div>
-    <!-- Зона сборки -->
-    <div id="phrase-builder-container" class="hidden">
-      <div class="drop-zone" id="drop-zone"></div>
-    </div>
-    <!-- Кнопки слов -->
-    <div class="word-container" id="word-container"></div>
-  </div>
-  <!-- Итоговый экран -->
-  <div class="final-screen hidden" id="final-screen">
-    <h2>Пройдено</h2>
-    <p class="final-score" id="final-score-text">Правильных: 0 из 0</p>
-    <button onclick="restartTest()">🔄 Начать заново</button>
-  </div>
-  <script>
-    const phrases = [
-      { english: "hot coffee", transcription: "[hɒt ˈkɔːfi]", translation: "горячий кофе", imageSrc: "hot coffee.jpg" },
-      { english: "cold coffee", transcription: "[kəʊld ˈkɔːfi]", translation: "холодный кофе", imageSrc: "cold coffee.jpg" },
-      { english: "hot tea", transcription: "[hɒt tiː]", translation: "горячий чай", imageSrc: "hot tea.jpg" },
-      { english: "cold tea", transcription: "[kəʊld tiː]", translation: "холодный чай", imageSrc: "cold tea.jpg" },
-      { english: "hot sand", transcription: "[hɒt sænd]", translation: "гарячий песок", imageSrc: "hot sand.jpg" },
-      { english: "black skirt", transcription: "[blæk skɜːrt]", translation: "чёрная юбка", imageSrc: "black skirt.jpg" },
-      { english: "white skirt", transcription: "[waɪt skɜːrt]", translation: "белая юбка", imageSrc: "white skirt.jpg" },
-      { english: "black rabbit", transcription: "[blæk ˈræbɪt]", translation: "чёрный кролик", imageSrc: "black rabbit.jpg" },
-      { english: "white rabbit", transcription: "[waɪt ˈræbɪt]", translation: "белый кролик", imageSrc: "white rabbit.jpg" },
-      { english: "black chair", transcription: "[blæk tʃeər]", translation: "чёрный стул", imageSrc: "black chair.jpg" },
-      { english: "white chair", transcription: "[waɪt tʃeər]", translation: "белый стул", imageSrc: "white chair.jpg" },
-      { english: "cold sand", transcription: "[kəʊld sænd]", translation: "холодный песок", imageSrc: "cold sand.jpg" },
-      { english: "old car", transcription: "[əʊld kɑːr]", translation: "старая машина", imageSrc: "old car.jpg" },
-      { english: "new car", transcription: "[njuː kɑːr]", translation: "новая машина", imageSrc: "new car.jpg" },
-      { english: "old house", transcription: "[əʊld haʊs]", translation: "старый дом", imageSrc: "old house.jpg" },
-      { english: "new house", transcription: "[njuː haʊs]", translation: "новый дом", imageSrc: "new house.jpg" },
-      { english: "old photo", transcription: "[əʊld ˈfəʊtəʊ]", translation: "старое фото", imageSrc: "old photo.jpg" },
-      { english: "new photo", transcription: "[njuː ˈfəʊtəʊ]", translation: "новое фото", imageSrc: "new photo.jpg" },
-      { english: "dark room", transcription: "[dɑːrk rum]", translation: "тёмная комната", imageSrc: "dark room.jpg" },
-      { english: "light room", transcription: "[laɪt rum]", translation: "светлая комната", imageSrc: "light room.jpg" },
-      { english: "dark hair", transcription: "[dɑːrk heə]", translation: "тёмные волосы", imageSrc: "dark hair.jpg" },
-      { english: "light hair", transcription: "[laɪt heə]", translation: "светлые волосы", imageSrc: "light hair.jpg" },
-      { english: "dark smoke", transcription: "[dɑːrk sməʊk]", translation: "тёмный дым", imageSrc: "dark smoke.jpg" },
-      { english: "light smoke", transcription: "[laɪt sməʊk]", translation: "светлый дым", imageSrc: "light smoke.jpg" },
-      { english: "big shop", transcription: "[bɪɡ ʃɒp]", translation: "большой магазин", imageSrc: "big shop.jpg" },
-      { english: "small shop", transcription: "[smɔːl ʃɒp]", translation: "маленький магазин", imageSrc: "small shop.jpg" },
-      { english: "big fish", transcription: "[bɪɡ fɪʃ]", translation: "большая рыба", imageSrc: "big fish.jpg" },
-      { english: "small fish", transcription: "[smɔːl fɪʃ]", translation: "маленькая рыба", imageSrc: "small fish.jpg" },
-      { english: "big house", transcription: "[bɪɡ haʊs]", translation: "большой дом", imageSrc: "big house.jpg" },
-      { english: "small house", transcription: "[smɔːl haʊs]", translation: "маленький дом", imageSrc: "small house.jpg" },
-      { english: "happy boy", transcription: "[ˈhæpi bɔɪ]", translation: "счастливый мальчик", imageSrc: "happy boy.jpg" },
-      { english: "sad boy", transcription: "[sæd bɔɪ]", translation: "грустный мальчик", imageSrc: "sad boy.jpg" },
-      { english: "happy girl", transcription: "[ˈhæpi ɡɜːl]", translation: "счастливая девочка", imageSrc: "happy girl.jpg" },
-      { english: "sad girl", transcription: "[sæd ɡɜːl]", translation: "грустная девочка", imageSrc: "sad girl.jpg" },
-      { english: "happy face", transcription: "[ˈhæpi feɪs]", translation: "счастливое лицо", imageSrc: "happy face.jpg" },
-      { english: "sad face", transcription: "[sæd feɪs]", translation: "грустное лицо", imageSrc: "sad face.jpg" }
-    ];
-    
-    let currentPhraseIndex = 0;
-    let correctCount = 0;
-    let currentMode = 'learn';
-    let answeredPhrases = [];
-    const totalPhrases = phrases.length;
-    const correctSound = new Audio('2right.mp3');
-    const wrongSound = new Audio('wrong.mp3');
-    
-    // Разделение на прилагательные и существительные
- // Разделение на прилагательные и существительные
-const adjectives = [...new Set(phrases.map(p => p.english.split(' ')[0]))];
-const nouns = [...new Set(phrases.map(p => p.english.split(' ')[1]))];
-    let currentAdjective = '';
-    let currentNoun = '';
-    let draggedWord = null;
-    let wordContainer;
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      wordContainer = document.getElementById('word-container');
-      document.getElementById('next-phrase-btn').addEventListener('click', nextAction);
-      document.getElementById('user-answer').addEventListener('keypress', handleEnter);
-    });
-    
-    function handleEnter(e) {
-      if (e.key === 'Enter') checkAnswer();
-    }
-    
-    function switchMode(mode) {
-      currentMode = mode;
-      const imageElement = document.getElementById('phrase-image');
-      const userAnswerInput = document.getElementById('user-answer');
-      const phraseBuilder = document.getElementById('phrase-builder-container');
-      
-      if (mode === 'test') {
-        imageElement.removeEventListener('click', speakPhrase);
-        userAnswerInput.classList.remove('hidden');
-        phraseBuilder.classList.add('hidden');
-        userAnswerInput.focus();
-      } else if (mode === 'builder') {
-        imageElement.removeEventListener('click', speakPhrase);
-        userAnswerInput.classList.add('hidden');
-        phraseBuilder.classList.remove('hidden');
-        generateRandomPhrase();
-        renderWords();
-      } else {
-        imageElement.addEventListener('click', speakPhrase);
-        userAnswerInput.classList.add('hidden');
-        phraseBuilder.classList.add('hidden');
-      }
-      
-      document.getElementById('phrase').classList.toggle('hidden', mode === 'test' || mode === 'builder');
-      document.getElementById('transcription').classList.toggle('hidden', mode === 'test' || mode === 'builder');
-      document.getElementById('translation').classList.remove('hidden');
-      
-      const nextBtn = document.getElementById('next-phrase-btn');
-      nextBtn.textContent = mode === 'test' ? '✅ Проверить' : 
-                         mode === 'builder' ? '✅ Подтвердить' : '➡️ Вперед';
-      
-      nextBtn.onclick = mode === 'test' ? checkAnswer : 
-                        mode === 'builder' ? checkPhrase : nextAction;
-      
-      document.querySelectorAll('.mode-buttons button').forEach(btn => btn.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-    }
-    
-    function showNextPhrase() {
-      currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-      if (currentPhraseIndex === 0 && currentMode === 'test') {
-        showFinalScreen();
-        return;
-      }
-      displayPhrase(phrases[currentPhraseIndex]);
-      updateScoreDisplay();
-    }
-    
-    function showPreviousPhrase() {
-      currentPhraseIndex = (currentPhraseIndex - 1 + phrases.length) % phrases.length;
-      displayPhrase(phrases[currentPhraseIndex]);
-    }
-    
-    function displayPhrase(phrase) {
-      document.getElementById('phrase').textContent = phrase.english;
-      document.getElementById('transcription').textContent = phrase.transcription;
-      document.getElementById('translation').textContent = phrase.translation;
-      document.getElementById('phrase-image').src = phrase.imageSrc || "";
-    }
-    
-    function unlockAudio() {
-      if (typeof unlockAudio.done === 'undefined') {
-        [correctSound, wrongSound].forEach(audio => {
-          if ('play' in audio) {
-            audio.volume = 0;
+
+    <script>
+        const phrases = [
+            { english: "hot coffee", transcription: "[hɒt ˈkɔːfi]", translation: "горячий кофе", imageSrc: "hot coffee.jpg" },
+            { english: "cold coffee", transcription: "[kəʊld ˈkɔːfi]", translation: "холодный кофе", imageSrc: "cold coffee.jpg" },
+            { english: "hot tea", transcription: "[hɒt tiː]", translation: "горячий чай", imageSrc: "hot tea.jpg" },
+            { english: "cold tea", transcription: "[kəʊld tiː]", translation: "холодный чай", imageSrc: "cold tea.jpg" },
+            { english: "hot sand", transcription: "[hɒt sænd]", translation: "гарячий песок", imageSrc: "hot sand.jpg" },
+            { english: "cold sand", transcription: "[kəʊld sænd]", translation: "холодный песок", imageSrc: "cold sand.jpg" },
+
+            { english: "black skirt", transcription: "[blæk skɜːrt]", translation: "чёрная юбка", imageSrc: "black skirt.jpg" },
+            { english: "white skirt", transcription: "[waɪt skɜːrt]", translation: "белая юбка", imageSrc: "white skirt.jpg" },
+            { english: "black rabbit", transcription: "[blæk ˈræbɪt]", translation: "чёрный кролик", imageSrc: "black rabbit.jpg" },
+            { english: "white rabbit", transcription: "[waɪt ˈræbɪt]", translation: "белый кролик", imageSrc: "white rabbit.jpg" },
+            { english: "black chair", transcription: "[blæk tʃeər]", translation: "чёрный стул", imageSrc: "black chair.jpg" },
+            { english: "white chair", transcription: "[waɪt tʃeər]", translation: "белый стул", imageSrc: "white chair.jpg" },
+
+            { english: "old car", transcription: "[əʊld kɑːr]", translation: "старая машина", imageSrc: "old car.jpg" },
+            { english: "new car", transcription: "[njuː kɑːr]", translation: "новая машина", imageSrc: "new car.jpg" },
+            { english: "old house", transcription: "[əʊld haʊs]", translation: "старый дом", imageSrc: "old house.jpg" },
+            { english: "new house", transcription: "[njuː haʊs]", translation: "новый дом", imageSrc: "new house.jpg" },
+            { english: "old photo", transcription: "[əʊld ˈfəʊtəʊ]", translation: "старое фото", imageSrc: "old photo.jpg" },
+            { english: "new photo", transcription: "[njuː ˈfəʊtəʊ]", translation: "новое фото", imageSrc: "new photo.jpg" },
+            
+            { english: "dark room", transcription: "[dɑːrk rum]", translation: "тёмная комната", imageSrc: "dark room.jpg" },
+            { english: "light room", transcription: "[laɪt rum]", translation: "светлая комната", imageSrc: "light room.jpg" },
+            { english: "dark hair", transcription: "[dɑːrk heə]", translation: "тёмные волосы", imageSrc: "dark hair.jpg" },
+            { english: "light hair", transcription: "[laɪt heə]", translation: "светлые волосы", imageSrc: "light hair.jpg" },
+            { english: "dark smoke", transcription: "[dɑːrk sməʊk]", translation: "тёмный дым", imageSrc: "dark smoke.jpg" },
+            { english: "light smoke", transcription: "[laɪt sməʊk]", translation: "светлый дым", imageSrc: "light smoke.jpg" },
+
+            { english: "big shop", transcription: "[bɪɡ ʃɒp]", translation: "большой магазин", imageSrc: "big shop.jpg" },
+            { english: "small shop", transcription: "[smɔːl ʃɒp]", translation: "маленький магазин", imageSrc: "small shop.jpg" },
+            { english: "big fish", transcription: "[bɪɡ fɪʃ]", translation: "большая рыба", imageSrc: "big fish.jpg" },
+            { english: "small fish", transcription: "[smɔːl fɪʃ]", translation: "маленькая рыба", imageSrc: "small fish.jpg" },
+            { english: "big house", transcription: "[bɪɡ haʊs]", translation: "большой дом", imageSrc: "big house.jpg" },
+            
+            { english: "small house", transcription: "[smɔːl haʊs]", translation: "маленький дом", imageSrc: "small house.jpg" },
+            { english: "happy boy", transcription: "[ˈhæpi bɔɪ]", translation: "счастливый мальчик", imageSrc: "happy boy.jpg" },
+            { english: "sad boy", transcription: "[sæd bɔɪ]", translation: "грустный мальчик", imageSrc: "sad boy.jpg" },
+            { english: "happy girl", transcription: "[ˈhæpi ɡɜːl]", translation: "счастливая девочка", imageSrc: "happy girl.jpg" },
+            { english: "sad girl", transcription: "[sæd ɡɜːl]", translation: "грустная девочка", imageSrc: "sad girl.jpg" },
+            { english: "happy face", transcription: "[ˈhæpi feɪs]", translation: "веселое лицо", imageSrc: "happy face.jpg" },
+            { english: "sad face", transcription: "[sæd feɪs]", translation: "грустное лицо", imageSrc: "sad face.jpg" }
+        ];
+
+        let answeredPhrases = []; // Фразы, на которые был дан ответ в режиме Тренировка
+        let currentPhraseIndex = 0;
+        let correctCount = 0;
+        let currentMode = 'learn';
+        const totalPhrases = phrases.length;
+
+        const correctSound = new Audio('2right.mp3');
+        const wrongSound = new Audio('wrong.mp3');
+
+        // Разрешение на воспроизведение аудио
+        function unlockAudio() {
+            if (typeof unlockAudio.done === 'undefined') {
+                [correctSound, wrongSound].forEach(audio => {
+                    if ('play' in audio) {
+                        // Попытка разблокировать аудио без воспроизведения
+                        audio.volume = 0; // Сначала тихо
+                        const playPromise = audio.play();
+                        if (playPromise !== undefined) {
+                            playPromise
+                                .then(() => {
+                                    audio.pause(); // Сразу остановить
+                                    audio.volume = 1; // Восстановить громкость
+                                })
+                                .catch(() => { });
+                        }
+                    }
+                });
+                unlockAudio.done = true;
+            }
+        }
+        document.addEventListener('click', unlockAudio, { once: true });
+
+
+        function updateScoreDisplay() {
+            const totalTested = answeredPhrases.length;
+            document.getElementById('score-info').textContent =
+                `Правильных: ${correctCount} из ${totalTested}`;
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const imageElement = document.getElementById('phrase-image');
+            const userAnswerInput = document.getElementById('user-answer');
+
+            // Отключение/включение озвучки
+            if (mode === 'test') {
+                imageElement.removeEventListener('click', speakPhrase);
+                userAnswerInput.classList.remove('hidden');
+                // Устанавливаем фокус на поле ввода
+                userAnswerInput.focus();
+            } else {
+                imageElement.addEventListener('click', speakPhrase);
+                userAnswerInput.classList.add('hidden');
+            }
+
+            document.getElementById('phrase').classList.toggle('hidden', mode === 'test');
+            document.getElementById('transcription').classList.toggle('hidden', mode === 'test');
+
+            document.getElementById('next-phrase-btn').textContent = mode === 'test' ? '✅ Проверить' : 'Вперед ➡️';
+            document.getElementById('next-phrase-btn').onclick = mode === 'test' ? checkAnswer : nextAction;
+
+            // Выделение активной кнопки режима
+            document.querySelectorAll('.mode-buttons button').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function nextAction() {
+            if (currentMode === 'test') {
+                checkAnswer();
+            } else {
+                showNextPhrase();
+            }
+        }
+
+        function displayPhrase(phrase) {
+            document.getElementById('phrase').textContent = phrase.english;
+            document.getElementById('transcription').textContent = phrase.transcription;
+            document.getElementById('translation').textContent = phrase.translation;
+            document.getElementById('phrase-image').src = phrase.imageSrc || "";
+        }
+
+        function showNextPhrase() {
+            currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+
+            if (currentPhraseIndex === 0 && currentMode === 'test') {
+                showFinalScreen();
+                return;
+            }
+
+            displayPhrase(phrases[currentPhraseIndex]);
+            updateScoreDisplay();
+        }
+
+        function showPreviousPhrase() {
+            currentPhraseIndex = (currentPhraseIndex - 1 + phrases.length) % phrases.length;
+            displayPhrase(phrases[currentPhraseIndex]);
+        }
+
+        function speakPhrase() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const speech = new SpeechSynthesisUtterance();
+                speech.text = phrases[currentPhraseIndex].english;
+                speech.lang = 'en-US';
+                speech.rate = 1;
+                window.speechSynthesis.speak(speech);
+            }
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('user-answer');
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = phrases[currentPhraseIndex].english.toLowerCase();
+
+            if (userAnswer === '') {
+                alert('Введите ответ!');
+                return;
+            }
+
+            const currentPhrase = phrases[currentPhraseIndex];
+
+            // Добавляем фразу в список пройденных
+            if (!answeredPhrases.includes(currentPhrase)) {
+                answeredPhrases.push(currentPhrase);
+            }
+
+            if (userAnswer === correctAnswer) {
+                correctCount++;
+                playSound(correctSound);
+                setTimeout(() => {
+                    input.value = '';
+                    showNextPhrase();
+                }, 1000);
+            } else {
+                playSound(wrongSound);
+                alert(`❌ Неверно. Правильный ответ: ${correctAnswer}`);
+                input.value = '';
+            }
+            updateScoreDisplay();
+        }
+
+        function playSound(audio) {
+            if (!audio) return;
+            audio.currentTime = 0;
             const playPromise = audio.play();
             if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  audio.pause();
-                  audio.volume = 1;
-                })
-                .catch(() => {});
+                playPromise.catch(error => {
+                    console.error("Ошибка воспроизведения звука:", error);
+                });
             }
-          }
-        });
-        unlockAudio.done = true;
-      }
-    }
-    
-    document.addEventListener('click', unlockAudio, { once: true });
-    
-    function updateScoreDisplay() {
-      const totalTested = answeredPhrases.length;
-      document.getElementById('score-info').textContent = 
-        `Правильных: ${correctCount} из ${totalTested}`;
-    }
-    
-    function speakPhrase() {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const speech = new SpeechSynthesisUtterance();
-        speech.text = phrases[currentPhraseIndex].english;
-        speech.lang = 'en-US';
-        speech.rate = 1;
-        window.speechSynthesis.speak(speech);
-      }
-    }
-    
-    function checkAnswer() {
-      const input = document.getElementById('user-answer');
-      const userAnswer = input.value.trim().toLowerCase();
-      const correctAnswer = phrases[currentPhraseIndex].english.toLowerCase();
-      
-      if (userAnswer === '') {
-        alert('Введите ответ!');
-        return;
-      }
-      
-      if (!answeredPhrases.includes(phrases[currentPhraseIndex])) {
-        answeredPhrases.push(phrases[currentPhraseIndex]);
-      }
-      
-      if (userAnswer === correctAnswer) {
-        correctCount++;
-        playSound(correctSound);
-        setTimeout(() => {
-          input.value = '';
-          showNextPhrase();
-        }, 1000);
-      } else {
-        playSound(wrongSound);
-        alert(`❌ Неверно. Правильный ответ: ${correctAnswer}`);
-        input.value = '';
-      }
-      updateScoreDisplay();
-    }
-    
-    function playSound(audio) {
-      if (!audio) return;
-      audio.currentTime = 0;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Ошибка воспроизведения звука:", error);
-        });
-      }
-    }
-    
-    function showFinalScreen() {
-      document.getElementById('main-container').classList.add('hidden');
-      document.getElementById('final-screen').classList.remove('hidden');
-      const totalTested = answeredPhrases.length;
-      document.getElementById('final-score-text').textContent = 
-        `Правильных: ${correctCount} из ${totalTested}`;
-    }
-    
-    function restartTest() {
-      correctCount = 0;
-      currentPhraseIndex = 0;
-      answeredPhrases = [];
-      updateScoreDisplay();
-      displayPhrase(phrases[0]);
-      document.getElementById('final-screen').classList.add('hidden');
-      document.getElementById('main-container').classList.remove('hidden');
-      switchMode('test');
-    }
-    
-    // Сборка фраз
-    function generateRandomPhrase() {
-      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-      document.getElementById('phrase').textContent = randomPhrase.english;
-      document.getElementById('transcription').textContent = randomPhrase.transcription;
-      document.getElementById('translation').textContent = randomPhrase.translation;
-      document.getElementById('phrase-image').src = randomPhrase.imageSrc || "";
-      
-      [currentAdjective, currentNoun] = randomPhrase.english.split(' ');
-    }
-    
-    function renderWords() {
-      const container = document.getElementById('word-container');
-      container.innerHTML = '';
-      
-      [...adjectives, ...nouns].forEach(word => {
-        const el = document.createElement('div');
-        el.className = 'word';
-        el.textContent = word;
-        el.draggable = true;
-        
-        // Определяем тип слова и добавляем класс
-        if (adjectives.includes(word)) {
-          el.classList.add('adjective');
-        } else {
-          el.classList.add('noun');
         }
-        
-        el.addEventListener('dragstart', handleDragStart);
-        el.addEventListener('click', () => returnWord(el));
-        container.appendChild(el);
-      });
-    }
-    
-    function returnWord(wordElement) {
-      const wordText = wordElement.textContent;
-      wordElement.remove();
-      
-      const newWord = document.createElement('div');
-      newWord.className = 'word';
-      newWord.textContent = wordText;
-      
-      // Сохраняем цветовой стиль
-      if (adjectives.includes(wordText)) {
-        newWord.classList.add('adjective');
-      } else {
-        newWord.classList.add('noun');
-      }
-      
-      newWord.draggable = true;
-      newWord.addEventListener('dragstart', handleDragStart);
-      newWord.addEventListener('click', () => returnWord(newWord));
-      
-      document.getElementById('word-container').appendChild(newWord);
-    }
-    
-    function handleDragStart(e) {
-      draggedWord = e.target;
-      e.dataTransfer.setData('text/plain', e.target.textContent);
-      e.target.classList.add('dragging');
-    }
-    
-    document.getElementById('drop-zone').addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-    });
-    
-    document.getElementById('drop-zone').addEventListener('drop', e => {
-      e.preventDefault();
-      if (!draggedWord) return;
-      
-      const dropZone = document.getElementById('drop-zone');
-      if (dropZone.children.length >= 2) {
-        alert('Можно использовать только два слова!');
-        return;
-      }
-      
-      const word = e.dataTransfer.getData('text');
-      const el = createWordElement(word);
-      dropZone.appendChild(el);
-      draggedWord.remove();
-      draggedWord = null;
-    });
-    
-    function createWordElement(text) {
-      const el = document.createElement('div');
-      el.className = 'word';
-      el.textContent = text;
-      
-      if (adjectives.includes(text)) {
-        el.classList.add('adjective');
-      } else {
-        el.classList.add('noun');
-      }
-      
-      el.addEventListener('click', () => returnWord(el));
-      el.draggable = true;
-      el.addEventListener('dragstart', handleDragStart);
-      return el;
-    }
-    
-    function checkPhrase() {
-      const dropZone = document.getElementById('drop-zone');
-      const words = Array.from(dropZone.children).map(w => w.textContent);
-      
-      if (words.length !== 2) {
-        alert('Выберите прилагательное и существительное!');
-        return;
-      }
-      
-      const phrase = words.join(' ').toLowerCase();
-      const correctPhrase = phrases.find(p => p.english.toLowerCase() === phrase);
-      
-      if (correctPhrase) {
-        if (!answeredPhrases.includes(correctPhrase)) {
-          answeredPhrases.push(correctPhrase);
-          correctCount++;
+
+        function showFinalScreen() {
+            document.getElementById('main-container').classList.add('hidden');
+            const finalScreen = document.getElementById('final-screen');
+            finalScreen.classList.remove('hidden');
+
+            const totalTested = answeredPhrases.length;
+            const finalText = `Правильно: ${correctCount} из ${totalTested}`;
+            document.getElementById('final-score-text').textContent = finalText;
         }
-        playSound(correctSound);
-        
-        // Анимация объединения слов
-        const animatedPhrase = document.createElement('div');
-        animatedPhrase.className = 'animated-phrase';
-        animatedPhrase.textContent = phrase;
-        document.getElementById('phrase-image').parentNode.insertBefore(animatedPhrase, document.getElementById('phrase-image'));
-        
-        // Удаление анимации и переход к следующему заданию через 1.5 секунды
-        setTimeout(() => {
-          animatedPhrase.remove();
-          clearDropZone();
-          generateRandomPhrase();
-          renderWords();
-        }, 1500);
-      } else {
-        playSound(wrongSound);
-        alert(`❌ Неправильно. Попробуйте снова.`);
-        clearDropZone();
-      }
-      
-      updateScoreDisplay();
-    }
-    
-    function clearDropZone() {
-      document.getElementById('drop-zone').innerHTML = '';
-    }
-    
-    function nextAction() {
-      if (currentMode === 'test') {
-        checkAnswer();
-      } else if (currentMode === 'builder') {
-        checkPhrase();
-      } else {
-        showNextPhrase();
-      }
-    }
-    
-    // Инициализация
-    document.getElementById('phrase-image').addEventListener('click', speakPhrase);
-    document.getElementById('user-answer').addEventListener('keypress', handleEnter);
-    document.querySelectorAll('.mode-buttons button')[0].classList.add('active');
-    displayPhrase(phrases[currentPhraseIndex]);
-    updateScoreDisplay();
-  </script>
+
+        function restartTest() {
+            correctCount = 0;
+            currentPhraseIndex = 0;
+            answeredPhrases = []; // Сбрасываем список пройденных фраз
+            updateScoreDisplay();
+            displayPhrase(phrases[0]);
+            document.getElementById('final-screen').classList.add('hidden');
+            document.getElementById('main-container').classList.remove('hidden');
+            switchMode('test');
+        }
+
+        // Инициализация
+        document.getElementById('phrase-image').addEventListener('click', speakPhrase);
+        document.getElementById('user-answer').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // Установка активного режима по умолчанию
+        document.querySelectorAll('.mode-buttons button')[0].classList.add('active');
+
+        displayPhrase(phrases[currentPhraseIndex]);
+        updateScoreDisplay();
+
+        // // Инициализация
+        // document.getElementById('phrase-image').addEventListener('click', speakPhrase);
+        // document.getElementById('user-answer').addEventListener('keypress', function(e) {
+        //   if (e.key === 'Enter') {
+        //     checkAnswer();
+        //   }
+        // });
+
+        displayPhrase(phrases[currentPhraseIndex]);
+        updateScoreDisplay();
+    </script>
 </body>
+
 </html>
