@@ -1,260 +1,237 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUMP to ENG</title>
-<style>
-    /* Современный дизайн с градиентами и анимацией */
-    body {
-        font-family: 'Segoe UI', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
-        padding: 20px;
-        transition: background-color 0.5s ease;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JUMP to ENG</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+      --card-bg: #1e1e1e;
+      --primary-color: #00d4ff;
+      --secondary-color: #00ffcc;
+      --accent-color: #003366;
+      --text-light: #f0f0f0;
+      --text-muted: #cccccc;
+      --border-radius: 1rem;
+      --transition: all 0.3s ease;
     }
-    
-    .container {
-        text-align: center;
-        background: #1e1e1e;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 10px 30px rgba(0, 100, 255, 0.2);
-        max-width: 400px;
-        width: 100%;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-        animation: fadeInUp 0.8s ease-out;
-        border: 1px solid rgba(0, 100, 255, 0.2);
-        backdrop-filter: blur(10px);
-    }
-    
-    .container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(45deg, rgba(0, 100, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 50%, rgba(0, 100, 255, 0.1) 100%);
-        opacity: 0.3;
-        z-index: -1;
-        animation: glow 3s infinite alternate;
-    }
-    
-    @keyframes glow {
-        0% { opacity: 0.2; }
-        100% { opacity: 0.4; }
-    }
-    
-    h1 {
-        color: #00d4ff;
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-        font-weight: bold;
-        position: relative;
-        padding-bottom: 0.5rem;
-        animation: slideInDown 0.6s ease-out;
-        text-shadow: 0 0 10px rgba(0, 100, 255, 0.5);
-    }
-    
-    #phrase-container {
-        margin-bottom: 0;
-        padding: 0;
-    }
-    
-    #phrase-image {
-        margin: 0 auto;
-        display: block;
-        width: 200px;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #00d4ff;
-        box-shadow: 0 0 15px rgba(0, 100, 255, 0.5);
-        transition: transform 0.3s ease;
-    }
-    
-    #phrase-image:hover {
-        transform: scale(1.05);
-    }
-    
-    #phrase {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #f0f0f0;
-        margin-bottom: 0.5rem;
-        position: relative;
-        animation: fadeIn 0.5s ease-in;
-        text-shadow: 0 0 5px rgba(0, 100, 255, 0.3);
-    }
-    
-    #transcription {
-        font-size: 1rem;
-        color: #cccccc;
-        margin-bottom: 0.3rem;
-        font-style: italic;
-        animation: fadeIn 0.5s ease-in;
-    }
-    
-    #translation {
-        font-size: 1.1rem;
-        color: #e0e0e0;
-        font-weight: 500;
-        animation: fadeIn 0.6s ease-in;
-        text-shadow: 0 0 3px rgba(0, 100, 255, 0.2);
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    button {
-        width: 140px;
-        padding: 0.6rem 1rem;
-        margin: 0.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 100, 255, 0.2);
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
-    }
-    
-    button::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 300%;
-        height: 300%;
-        background: rgba(0, 100, 255, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        transition: transform 0.3s ease;
-        z-index: -1;
-    }
-    
-    button:active::after {
-        transform: translate(-50%, -50%) scale(1);
-    }
-    
-    #prev-phrase-btn {
-        background: linear-gradient(135deg, #003366 0%, #001a33 100%);
-        color: #00d4ff;
-        border: 1px solid #00d4ff;
-    }
-    
-    #prev-phrase-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 100, 255, 0.4);
-    }
-    
-    #next-phrase-btn {
-        background: linear-gradient(135deg, #003333 0%, #001a1a 100%);
-        color: #00ffcc;
-        border: 1px solid #00ffcc;
-    }
-    
-    #next-phrase-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 255, 204, 0.4);
-    }
-    
-    .slider-container {
-        margin-top: 1.5rem;
-        text-align: left;
-    }
-    
-    input[type="range"] {
-        width: 100%;
-        accent-color: #00d4ff;
-    }
-    
-    #speedDisplay {
-        margin-left: 0.5rem;
-        font-weight: 600;
-        color: #00d4ff;
-    }
-    
-    label {
-        font-weight: 600;
-        color: #00d4ff;
-        display: block;
-        margin-bottom: 0.3rem;
-    }
-    
-    .footer {
-        margin-top: 1.5rem;
-        font-size: 0.9rem;
-        color: #888;
-        animation: fadeIn 0.8s ease-in;
-    }
-    
-    /* Добавленные стили для темной темы */
-    .container:hover {
-        box-shadow: 0 10px 30px rgba(0, 100, 255, 0.3);
-        transform: translateY(-5px);
-        transition: all 0.3s ease;
-    }
-    
-    button:hover {
-        box-shadow: 0 6px 12px rgba(0, 100, 255, 0.3);
-    }
-    
-    input[type="range"]::-webkit-slider-thumb {
-        box-shadow: 0 0 8px rgba(0, 100, 255, 0.5);
-    }
-    
-    input[type="range"]:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(0, 100, 255, 0.3);
-    }
-</style>
-</head>
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-light);
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px rgba(0, 100, 255, 0.2);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 100, 255, 0.2);
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(45deg, rgba(0, 100, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 50%, rgba(0, 100, 255, 0.1) 100%);
+      opacity: 0.3;
+      z-index: -1;
+      animation: glow 3s infinite alternate;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 100, 255, 0.5);
+    }
+
+    #phrase-container {
+      margin-bottom: 1rem;
+    }
+
+    #phrase-image {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid var(--primary-color);
+      box-shadow: 0 0 15px rgba(0, 100, 255, 0.5);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+      margin: 0 auto 1rem auto;
+    }
+
+    #phrase-image:hover {
+      transform: scale(1.05);
+    }
+
+    #phrase, #transcription, #translation {
+      margin-bottom: 0.3rem;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    #phrase {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-light);
+      text-shadow: 0 0 5px rgba(0, 100, 255, 0.3);
+    }
+
+    #transcription {
+      font-size: 1rem;
+      color: var(--text-muted);
+      /* font-style: italic; */
+    }
+
+    #translation {
+      font-size: 1.1rem;
+      color: #e0e0e0;
+      font-weight: 500;
+      text-shadow: 0 0 3px rgba(0, 100, 255, 0.2);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 100, 255, 0.2);
+      background: linear-gradient(135deg, var(--accent-color), #001a33);
+      color: var(--primary-color);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 100, 255, 0.4);
+    }
+
+    #next-phrase-btn {
+      background: linear-gradient(135deg, #003333, #001a1a);
+      color: var(--secondary-color);
+    }
+
+    .slider-container {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--primary-color);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary-color);
+    }
+
+    #speedDisplay {
+      margin-left: 0.5rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .footer {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #888;
+      animation: fadeIn 0.8s ease-in;
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glow {
+      0% { opacity: 0.2; }
+      100% { opacity: 0.4; }
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .container {
+        padding: 1.5rem;
+      }
+      #phrase-image {
+        width: 140px;
+        height: 140px;
+      }
+    }
+  </style>
+</head>
 <body>
-    <div class="container">
-        <!-- <h1>JUMP to ENG</h1> -->
-        <div id="phrase-container">
-            <img id="phrase-image" src="" alt="Phrase illustration">
-            <p id="phrase">Приветствие!</p>
-            <div id="translation-container">
-                <p id="transcription"></p>
-                <p id="translation"></p>
-            </div>
-        </div>
-        <button id="prev-phrase-btn">Назад</button>
-        <button id="next-phrase-btn">Вперед</button>
-        <div class="slider-container">
-            <label for="speedRange">Скорость речи:</label>
-            <input type="range" id="speedRange" min="0.3" max="1" value="1" step="0.1">
-            <span id="speedDisplay">1.0x</span>
-        </div>
-        <div class="footer">
-            <p>Нажмите на изображение, чтобы услышать произношение</p>
-        </div>
+  <div class="container">
+    <!-- <h1>JUMP to ENG</h1> -->
+    <div id="phrase-container">
+      <img id="phrase-image" src="" alt="Фраза">
+      <p id="phrase">💋</p>
+      <p id="transcription"></p>
+      <p id="translation"></p>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const phrases = [
+
+    <div class="buttons">
+      <button id="prev-phrase-btn">Назад</button>
+      <button id="next-phrase-btn">Вперед</button>
+    </div>
+
+    <div class="slider-container">
+      <label for="speedRange">Скорость речи:</label>
+      <input type="range" id="speedRange" min="0.3" max="1.5" value="1" step="0.1">
+      <span id="speedDisplay">1.0x</span>
+    </div>
+
+    <div class="footer">
+      <p>Нажмите на изображение, чтобы услышать произношение</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const phrases = [
                 { english: "hot coffee", transcription: "[wɔːrm ˈkɔːfi]", translation: "горячий кофе", imageSrc: "hot coffee.jpg" }, //
                 { english: "cold coffee", transcription: "[kəʊld ˈkɔːfi]", translation: "холодный кофе", imageSrc: "cold coffee.jpg" },
                 { english: "hot tea", transcription: "[wɔːrm tiː]", translation: "горячий чай", imageSrc: "hot tea.jpg" },
@@ -299,94 +276,61 @@
             ];
 
             let currentPhrase = {};
-            let history = [];
-            let availablePhrases = [...phrases];
+      let history = [];
+      let availablePhrases = [...phrases];
 
-            function displayPhrase(phrase) {
-                document.getElementById('phrase').textContent = phrase.english;
-                document.getElementById('transcription').textContent = phrase.transcription;
-                document.getElementById('translation').textContent = phrase.translation;
-                const imageElement = document.getElementById('phrase-image');
-                if (phrase.imageSrc) {
-                    imageElement.src = phrase.imageSrc;
-                    imageElement.style.display = "block";
-                } else {
-                    imageElement.style.display = "none";
-                }
-            }
+      function displayPhrase(phrase) {
+        document.getElementById('phrase').textContent = phrase.english;
+        document.getElementById('transcription').textContent = phrase.transcription;
+        document.getElementById('translation').textContent = phrase.translation;
+        const img = document.getElementById('phrase-image');
+        img.src = phrase.imageSrc || "";
+      }
 
-            function showRandomPhrase() {
-                const phraseContainer = document.getElementById('phrase-container');
-                phraseContainer.classList.remove('visible');
+      function showRandomPhrase() {
+        if (availablePhrases.length === 0) {
+          availablePhrases = [...phrases];
+          alert("Вы прошли все фразы! Начинаем заново.");
+        }
+        const index = Math.floor(Math.random() * availablePhrases.length);
+        const newPhrase = availablePhrases[index];
+        history.push(currentPhrase);
+        currentPhrase = newPhrase;
+        availablePhrases.splice(index, 1);
+        displayPhrase(currentPhrase);
+      }
 
-                setTimeout(() => {
-                    if (availablePhrases.length === 0) {
-                        availablePhrases = [...phrases];
-                    }
+      function showPreviousPhrase() {
+        if (history.length > 0) {
+          availablePhrases.push(currentPhrase);
+          currentPhrase = history.pop();
+          displayPhrase(currentPhrase);
+        }
+      }
 
-                    const randomIndex = Math.floor(Math.random() * availablePhrases.length);
-                    const newPhrase = availablePhrases[randomIndex];
+      function speakPhrase() {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const speech = new SpeechSynthesisUtterance();
+          speech.text = currentPhrase.english;
+          speech.lang = 'en-US';
+          speech.rate = parseFloat(document.getElementById('speedRange').value);
+          window.speechSynthesis.speak(speech);
+        } else {
+          alert("Синтез речи не поддерживается вашим браузером.");
+        }
+      }
 
-                    // Сохраняем текущую фразу в истории
-                    history.push(currentPhrase);
+      document.getElementById('speedRange').addEventListener('input', e => {
+        document.getElementById('speedDisplay').textContent = `${e.target.value}x`;
+      });
 
-                    // Обновляем текущую фразу
-                    currentPhrase = newPhrase;
+      document.getElementById('phrase-image').addEventListener('click', speakPhrase);
+      document.getElementById('prev-phrase-btn').addEventListener('click', showPreviousPhrase);
+      document.getElementById('next-phrase-btn').addEventListener('click', showRandomPhrase);
 
-                    // Удаляем эту фразу из доступных
-                    availablePhrases.splice(randomIndex, 1);
-
-                    // Отображаем новую фразу
-                    displayPhrase(currentPhrase);
-
-                    phraseContainer.classList.add('visible');
-                }, 300);
-            }
-
-            function showPreviousPhrase() {
-                if (history.length > 0) {
-                    // Сохраняем текущую фразу в доступных
-                    availablePhrases.push(currentPhrase);
-
-                    // Получаем предыдущую фразу из истории
-                    const prevPhrase = history.pop();
-
-                    // Обновляем текущую фразу
-                    currentPhrase = prevPhrase;
-
-                    // Отображаем предыдущую фразу
-                    displayPhrase(currentPhrase);
-                }
-            }
-
-            function speakPhrase() {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const speech = new SpeechSynthesisUtterance();
-                    speech.text = currentPhrase.english;
-                    speech.lang = 'en-US';
-                    speech.rate = parseFloat(document.getElementById('speedRange').value);
-                    window.speechSynthesis.speak(speech);
-                } else {
-                    alert("Синтез речи не поддерживается вашим браузером.");
-                }
-            }
-
-            const speedRange = document.getElementById('speedRange');
-            const speedDisplay = document.getElementById('speedDisplay');
-
-            speedRange.addEventListener('input', function () {
-                speedDisplay.textContent = `${speedRange.value}x`;
-            });
-
-            document.getElementById('phrase-image').addEventListener('click', speakPhrase);
-            document.getElementById('prev-phrase-btn').addEventListener('click', showPreviousPhrase);
-            document.getElementById('next-phrase-btn').addEventListener('click', showRandomPhrase);
-
-            // Инициализация первой фразы
-            showRandomPhrase();
-        });
-    </script>
+      showRandomPhrase();
+    });
+  </script>
 </body>
-
 </html>
